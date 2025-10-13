@@ -72,7 +72,7 @@ class PygameGame:
                 self.draw_board()
                 self.update_animations()
                 pygame.display.flip()
-                clock.tick(60)  # 60 FPS for smooth animations
+                clock.tick(60)  
             except Exception as e:
                 print(f"Error in game loop: {e}")
                 break
@@ -119,7 +119,7 @@ class PygameGame:
         """Draw grid lines with a glowing effect"""
         glow_color = tuple(min(255, c + 30) for c in self.hex_to_rgb(styles.LINE_COLOR))
         
-        # Draw glow (thicker, lighter lines)
+        # Draw glow 
         for i in range(1, 3):
             # Vertical lines
             pygame.draw.line(self.screen, glow_color, (i * 150, 0), (i * 150, 450), styles.GRID_LINE_WIDTH + 4)
@@ -190,7 +190,7 @@ class PygameGame:
             glow_color = tuple(min(255, c + 50) for c in self.hex_to_rgb(styles.O_COLOR))
             
             # Draw multiple arcs for full circle effect
-            segments = int(end_angle / 5)  # More segments for smoother animation
+            segments = int(end_angle / 5) 
             for i in range(segments):
                 start = math.radians(i * 5)
                 end = math.radians((i + 1) * 5)
@@ -223,7 +223,7 @@ class PygameGame:
         to_remove = []
         for cell, progress in self.animation_progress.items():
             if progress < 1.0:
-                self.animation_progress[cell] = min(1.0, progress + 0.05)  # Smooth animation speed
+                self.animation_progress[cell] = min(1.0, progress + 0.05) 
             else:
                 to_remove.append(cell)
         

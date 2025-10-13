@@ -79,7 +79,7 @@ class GUI:
             font=(styles.FONT_FAMILY, 14, "bold")
         ).pack(pady=20)
         
-        # Auto close after 3 seconds for info messages
+        
         if modal_type == "info":
             self.root.after(3000, lambda: self.close_modal_safe())
     
@@ -587,7 +587,7 @@ class GUI:
 
     def show_game_screen(self):
         self.clear_screen()
-        self.root.geometry("450x650")  # Larger window for game
+        self.root.geometry("450x650")  
         self.root.after(150, self._build_game_screen)  
 
     def _build_game_screen(self):
