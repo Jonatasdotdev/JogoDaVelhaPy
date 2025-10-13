@@ -1,7 +1,6 @@
 import socket
 import threading
 import json
-from tkinter import messagebox
 import customtkinter as ctk  
 from gui import GUI
 from game_pygame import PygameGame
@@ -19,7 +18,8 @@ class Client:
         # GUI
         self.root = ctk.CTk()
         self.root.title("Jogo Multiplayer - Jala Capstone")
-        self.root.geometry("400x500")
+        self.root.geometry("900x600")  # Janela maior
+        self.root.minsize(800, 550)  # Tamanho mínimo
         self.root.protocol("WM_DELETE_WINDOW", self.on_close)
         self.gui = GUI(self.root, self)
         self.gui.show_login_screen()
@@ -39,7 +39,11 @@ class Client:
         self.root.destroy()
 
     def send_message(self, message):
-        self.client.send(json.dumps(message).encode('utf-8'))
+        try:
+            self.client.send(json.dumps(message).encode('utf-8'))
+            print(f"[CLIENT] Enviando: {message}")  # Debug
+        except Exception as e:
+            print(f"[CLIENT] Erro ao enviar: {e}")
 
     def receive_messages(self):
         while True:
@@ -48,23 +52,24 @@ class Client:
                 if not data:
                     break
                 message = json.loads(data)
+                print(f"[CLIENT] Recebido: {message}")  # Debug
+                
                 if message['type'] == 'register_success':
-                    messagebox.showinfo("Sucesso", "Registrado!")
-                    self.gui.show_login_screen()
+                    self.gui.show_custom_modal("✅ Sucesso", "Conta registrada com sucesso!", "success")
+                    self.root.after(1500, self.gui.show_login_screen)
                 elif message['type'] == 'login_success':
                     self.username = self.gui.login_username_entry.get()
                     self.gui.show_main_screen()
                 elif message['type'] == 'error':
-                    messagebox.showerror("Erro", message['msg'])
+                    self.gui.show_custom_modal("❌ Erro", message['msg'], "error")
                 elif message['type'] == 'online_users':
                     self.gui.update_online_list(message['users'])
                 elif message['type'] == 'invite':
-                    response = messagebox.askyesno("Convite", f"{message['from']} te convidou para jogar. Aceitar?")
-                    self.send_message({'type': 'accept_invite' if response else 'reject_invite', 'inviter': message['from']})
+                    self.gui.show_invite_modal(message['from'])
                 elif message['type'] == 'invite_sent':
-                    messagebox.showinfo("Convite", "Convite enviado!")
+                    self.gui.show_custom_modal("📨 Convite", "Convite enviado! Aguardando resposta...", "info")
                 elif message['type'] == 'invite_rejected':
-                    messagebox.showinfo("Convite", f"{message['from']} rejeitou seu convite.")
+                    self.gui.show_custom_modal("😔 Convite Recusado", f"{message['from']} rejeitou seu convite.", "warning")
                 elif message['type'] == 'game_start':
                     self.current_game_id = message['game_id']
                     self.symbol = message['symbol']
@@ -74,22 +79,27 @@ class Client:
                 elif message['type'] == 'update_board':
                     if self.pygame_game:
                         self.pygame_game.update_board(message['board'], message['turn'])
-                    self.gui.turn_label.configure(text="Sua vez!" if message['turn'] else "Vez do oponente")
+                    self.gui.turn_label.configure(text="🎮 Sua vez!" if message['turn'] else "⏳ Vez do oponente")
                 elif message['type'] == 'game_end':
-                    messagebox.showinfo("Fim de Jogo", f"Resultado: {message['result']}")
-                    if self.pygame_game:
-                        self.pygame_game.stop()
-                    self.gui.show_main_screen()
-                    self.current_game_id = None
+                    result_type = "success" if "ganhou" in message['result'].lower() or "venceu" in message['result'].lower() else "info"
+                    self.gui.show_custom_modal("🏁 Fim de Jogo", message['result'], result_type)
+                    self.root.after(2500, self._end_game)
             except Exception as e:
                 print(f"Erro na recepção: {e}")
                 break
+
+    def _end_game(self):
+        """Helper to end game after modal"""
+        if self.pygame_game:
+            self.pygame_game.stop()
+        self.gui.show_main_screen()
+        self.current_game_id = None
 
     def register(self):
         username = self.gui.reg_username_entry.get()
         password = self.gui.reg_password_entry.get()
         if not username or not password:
-            messagebox.showerror("Erro", "Preencha todos os campos!")
+            self.gui.show_custom_modal("⚠️ Atenção", "Preencha todos os campos!", "warning")
             return
         self.send_message({'type': 'register', 'username': username, 'password': password})
 
@@ -105,10 +115,15 @@ class Client:
     def invite_selected(self):
         selected = self.gui.online_list.curselection()
         if selected:
-            target = self.gui.online_list.get(selected[0])
+            # Pega o texto da lista que tem formato "  👤 username"
+            display_text = self.gui.online_list.get(selected[0])
+            # Remove o emoji e espaços para pegar só o username
+            target = display_text.replace("👤", "").strip()
+            
+            print(f"[CLIENT] Convidando usuário: '{target}'")  # Debug
             self.send_message({'type': 'invite', 'target': target})
         else:
-            messagebox.showerror("Erro", "Selecione um usuário na lista!")
+            self.gui.show_custom_modal("⚠️ Atenção", "Selecione um usuário na lista!", "warning")
 
     def start_pygame_game(self, embed_frame):
         self.pygame_game = PygameGame(self, embed_frame)
