@@ -32,7 +32,7 @@ class PygameGame:
         
         try:
             self.screen = pygame.display.set_mode((400, 400))
-            self.screen.fill(styles.BOARD_COLOR)  # Fundo inicial (será sobrescrito pelo gradiente)
+            self.screen.fill(styles.BOARD_COLOR)  
             pygame.display.flip()
         except Exception as e:
             print(f"Erro ao inicializar Pygame: {e}")
@@ -41,8 +41,8 @@ class PygameGame:
 
         # Fontes e estilo
         pygame.font.init()
-        self.font = pygame.font.SysFont(styles.FONT_FAMILY, 120)  # Aumenta o tamanho para destacar
-        self.font_outline = pygame.font.SysFont(styles.FONT_FAMILY, 120)  # Para contorno
+        self.font = pygame.font.SysFont(styles.FONT_FAMILY, 120)  
+        self.font_outline = pygame.font.SysFont(styles.FONT_FAMILY, 120) 
 
         # Thread para loop Pygame
         self.game_thread = threading.Thread(target=self.game_loop, daemon=True)
@@ -64,23 +64,23 @@ class PygameGame:
 
                 self.draw_board()
                 pygame.display.flip()
-                clock.tick(30)  # 30 FPS
+                clock.tick(30)  
             except Exception as e:
                 print(f"Erro no game loop: {e}")
                 break
 
     def draw_board(self):
-        # Gradiente de fundo (azul escuro para claro)
+        
         for y in range(400):
-            r = int(10 + (y / 400) * (65 - 10))  # Ajusta o vermelho do gradiente
-            g = int(36 + (y / 400) * (81 - 36))  # Ajusta o verde
-            b = int(114 + (y / 400) * (181 - 114))  # Ajusta o azul (de #0A2472 para #3F51B5)
+            r = int(10 + (y / 400) * (65 - 10)) 
+            g = int(36 + (y / 400) * (81 - 36)) 
+            b = int(114 + (y / 400) * (181 - 114))  
             pygame.draw.line(self.screen, (r, g, b), (0, y), (400, y))
 
         # Borda externa do tabuleiro
-        pygame.draw.rect(self.screen, styles.LINE_COLOR, (10, 10, 380, 380), 10)  # Borda grossa
+        pygame.draw.rect(self.screen, styles.LINE_COLOR, (10, 10, 380, 380), 10) 
 
-        # Linhas do tabuleiro com espessura maior e arredondamento
+        
         for i in range(1, 3):
             pygame.draw.line(self.screen, styles.LINE_COLOR, (0, i * 133 + 10), (400, i * 133 + 10), 15)
             pygame.draw.line(self.screen, styles.LINE_COLOR, (i * 133 + 10, 0), (i * 133 + 10, 400), 15)
