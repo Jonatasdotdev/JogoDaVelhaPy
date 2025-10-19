@@ -4,6 +4,7 @@ import json
 import customtkinter as ctk  
 from gui import GUI
 from game_pygame import PygameGame
+from tkinter import messagebox
 
 class Client:
     def __init__(self, host='localhost', port=55555):

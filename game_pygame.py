@@ -12,7 +12,7 @@ class PygameGame:
         self.board = [[' ' for _ in range(3)] for _ in range(3)]
         self.embed_frame = embed_frame
         self.animation_progress = {}  # Track animation for each cell
-        self.hover_cell = None  # Track which cell is being hovered
+        self.hover_cell = None  # Track which cell is being hovere
 
         # Force Tkinter frame update
         self.embed_frame.update_idletasks()
