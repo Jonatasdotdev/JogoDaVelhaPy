@@ -42,7 +42,7 @@ class Client:
     def send_message(self, message):
         try:
             self.client.send(json.dumps(message).encode('utf-8'))
-            print(f"[CLIENT] Enviando: {message}")  # Debug
+            print(f"[CLIENT] Enviando: {message}")
         except Exception as e:
             print(f"[CLIENT] Erro ao enviar: {e}")
 
@@ -53,7 +53,7 @@ class Client:
                 if not data:
                     break
                 message = json.loads(data)
-                print(f"[CLIENT] Recebido: {message}")  # Debug
+                print(f"[CLIENT] Recebido: {message}")
                 
                 if message['type'] == 'register_success':
                     self.gui.show_custom_modal("✅ Sucesso", "Conta registrada com sucesso!", "success")
