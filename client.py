@@ -19,8 +19,8 @@ class Client:
         # GUI
         self.root = ctk.CTk()
         self.root.title("Jogo Multiplayer - Jala Capstone")
-        self.root.geometry("900x600")  # Janela maior
-        self.root.minsize(800, 550)  # Tamanho mínimo
+        self.root.geometry("900x600")
+        self.root.minsize(800, 550)
         self.root.protocol("WM_DELETE_WINDOW", self.on_close)
         self.gui = GUI(self.root, self)
         self.gui.show_login_screen()
@@ -116,12 +116,10 @@ class Client:
     def invite_selected(self):
         selected = self.gui.online_list.curselection()
         if selected:
-            # Pega o texto da lista que tem formato "  👤 username"
             display_text = self.gui.online_list.get(selected[0])
-            # Remove o emoji e espaços para pegar só o username
             target = display_text.replace("👤", "").strip()
             
-            print(f"[CLIENT] Convidando usuário: '{target}'")  # Debug
+            print(f"[CLIENT] Convidando usuário: '{target}'")
             self.send_message({'type': 'invite', 'target': target})
         else:
             self.gui.show_custom_modal("⚠️ Atenção", "Selecione um usuário na lista!", "warning")
