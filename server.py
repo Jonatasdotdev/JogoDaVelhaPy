@@ -25,8 +25,8 @@ class Server:
         self.server = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
         self.server.bind((host, port))
         self.server.listen()
-        self.clients = {}  # {username: client_socket}
-        self.games = {}    # {game_id: {'players': [p1, p2], 'board': [[' ']*3 for _ in range(3)], 'turn': p1, 'status': 'active'}}
+        self.clients = {}
+        self.games = {}
         self.game_id_counter = 0
         self.lock = threading.Lock()
         logging.info("Servidor iniciado.")
@@ -45,7 +45,7 @@ class Server:
                         self.register_user(message['username'], message['password'], client)
                     elif message['type'] == 'login':
                         username = self.login_user(message['username'], message['password'], client, addr)
-                    elif username:  # Só processa se logado
+                    elif username:
                         if message['type'] == 'get_online':
                             self.send_online_users(client)
                         elif message['type'] == 'invite':
@@ -130,7 +130,7 @@ class Server:
         game_id = self.game_id_counter
         players = [inviter, acceptor]
         board = [[' ' for _ in range(3)] for _ in range(3)]
-        turn = players[0]  # Inviter começa
+        turn = players[0]
         self.games[game_id] = {'players': players, 'board': board, 'turn': turn, 'status': 'active'}
 
         # Notificar ambos
@@ -167,7 +167,7 @@ class Server:
             return
         game = self.games[game_id]
         if game['status'] != 'active' or game['turn'] != player or game['board'][position[0]][position[1]] != ' ':
-            return  # Jogada inválida
+            return
 
         symbol = 'X' if player == game['players'][0] else 'O'
         game['board'][position[0]][position[1]] = symbol
@@ -231,7 +231,7 @@ class Server:
         if game_id in self.games:
             game = self.games[game_id]
             opponent = game['players'][1] if player == game['players'][0] else game['players'][0]
-            self.end_game(game_id, 'X' if opponent == game['players'][0] else 'O')  # Concede vitória ao oponente
+            self.end_game(game_id, 'X' if opponent == game['players'][0] else 'O')
             logging.info(f"Jogador {player} abandonou partida {game_id}")
 
     def run(self):
