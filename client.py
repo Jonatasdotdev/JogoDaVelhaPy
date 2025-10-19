@@ -19,7 +19,7 @@ class Client:
         # GUI
         self.root = ctk.CTk()
         self.root.title("Jogo Multiplayer - Jala Capstone")
-        self.root.geometry("900x600")  # Janela maior
+        self.root.geometry("900x600")  # Janela maio
         self.root.minsize(800, 550)  # Tamanho mínimo
         self.root.protocol("WM_DELETE_WINDOW", self.on_close)
         self.gui = GUI(self.root, self)

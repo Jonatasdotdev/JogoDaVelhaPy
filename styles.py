@@ -16,7 +16,7 @@ BOARD_COLOR = "#1a1a2e"
 LINE_COLOR = "#00d9ff"
 X_COLOR = "#e94560"  # Pink/red for X
 O_COLOR = "#00d9ff"  # Cyan for O
-WIN_LINE_COLOR = "#FFD700"  # Gold for winning line
+WIN_LINE_COLOR = "#FFD700"  # Gold for winning lin
 LINE_WIDTH = 8
 GRID_LINE_WIDTH = 4
 

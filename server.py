@@ -189,7 +189,7 @@ class Server:
             }).encode('utf-8'))
 
     def check_winner(self, board):
-        # Linhas, colunas, diagonais
+        # Linhas, colunas, diagonai
         for i in range(3):
             if board[i][0] == board[i][1] == board[i][2] != ' ':
                 return board[i][0]

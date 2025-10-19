@@ -66,7 +66,7 @@ class GUI:
             wraplength=350
         ).pack(pady=40, padx=20)
         
-        # OK button
+        # OK butto
         ctk.CTkButton(
             frame,
             text="OK",
