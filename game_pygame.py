@@ -11,8 +11,8 @@ class PygameGame:
         self.running = True
         self.board = [[' ' for _ in range(3)] for _ in range(3)]
         self.embed_frame = embed_frame
-        self.animation_progress = {}  # Track animation for each cell
-        self.hover_cell = None  # Track which cell is being hovere
+        self.animation_progress = {}
+        self.hover_cell = None
 
         # Force Tkinter frame update
         self.embed_frame.update_idletasks()
@@ -42,11 +42,9 @@ class PygameGame:
             self.running = False
             return
 
-        # Fonts
         pygame.font.init()
         self.font = pygame.font.SysFont(styles.FONT_FAMILY, 100, bold=True)
 
-        # Start game loop thread
         self.game_thread = threading.Thread(target=self.game_loop, daemon=True)
         self.game_thread.start()
 
@@ -65,7 +63,6 @@ class PygameGame:
                         col = x // 150
                         row = y // 150
                         if 0 <= row < 3 and 0 <= col < 3 and self.board[row][col] == ' ':
-                            # Start animation for this cell
                             self.animation_progress[(row, col)] = 0
                             self.client.make_move(row, col)
 
@@ -102,7 +99,6 @@ class PygameGame:
                 hover_rect = pygame.Rect(col * 150 + 5, row * 150 + 5, 140, 140)
                 pygame.draw.rect(self.screen, (15, 52, 96, 100), hover_rect, border_radius=10)
 
-        # Draw grid lines with glow effect
         self.draw_grid_with_glow()
 
         # Draw X and O symbols with animations
@@ -118,19 +114,15 @@ class PygameGame:
     def draw_grid_with_glow(self):
         """Draw grid lines with a glowing effect"""
         glow_color = tuple(min(255, c + 30) for c in self.hex_to_rgb(styles.LINE_COLOR))
-        
-        # Draw glow 
+
+        # Vertical and horizontal lines
         for i in range(1, 3):
-            # Vertical lines
             pygame.draw.line(self.screen, glow_color, (i * 150, 0), (i * 150, 450), styles.GRID_LINE_WIDTH + 4)
-            # Horizontal lines
             pygame.draw.line(self.screen, glow_color, (0, i * 150), (450, i * 150), styles.GRID_LINE_WIDTH + 4)
         
         # Draw main lines
         for i in range(1, 3):
-            # Vertical lines
             pygame.draw.line(self.screen, self.hex_to_rgb(styles.LINE_COLOR), (i * 150, 0), (i * 150, 450), styles.GRID_LINE_WIDTH)
-            # Horizontal lines
             pygame.draw.line(self.screen, self.hex_to_rgb(styles.LINE_COLOR), (0, i * 150), (450, i * 150), styles.GRID_LINE_WIDTH)
 
     def draw_x(self, row, col, progress):
@@ -139,9 +131,8 @@ class PygameGame:
         center_y = row * 150 + 75
         size = 50
         
-        # Calculate animation
-        line_progress = min(1.0, progress * 2)  # First line
-        line2_progress = max(0, min(1.0, (progress - 0.5) * 2))  # Second line
+        line_progress = min(1.0, progress * 2)
+        line2_progress = max(0, min(1.0, (progress - 0.5) * 2))
         
         # Draw first diagonal with glow
         if line_progress > 0:
@@ -153,8 +144,7 @@ class PygameGame:
             pygame.draw.line(self.screen, glow_color, 
                            (center_x - size, center_y - size),
                            (end_x1, end_y1), 12)
-            
-            # Main line
+      
             pygame.draw.line(self.screen, self.hex_to_rgb(styles.X_COLOR),
                            (center_x - size, center_y - size),
                            (end_x1, end_y1), 8)
@@ -163,14 +153,12 @@ class PygameGame:
         if line2_progress > 0:
             end_x2 = center_x + size - (2 * size * line2_progress)
             end_y2 = center_y - size + (2 * size * line2_progress)
-            
-            # Glow effect
+ 
             glow_color = tuple(min(255, c + 50) for c in self.hex_to_rgb(styles.X_COLOR))
             pygame.draw.line(self.screen, glow_color,
                            (center_x + size, center_y - size),
                            (end_x2, end_y2), 12)
-            
-            # Main line
+
             pygame.draw.line(self.screen, self.hex_to_rgb(styles.X_COLOR),
                            (center_x + size, center_y - size),
                            (end_x2, end_y2), 8)
