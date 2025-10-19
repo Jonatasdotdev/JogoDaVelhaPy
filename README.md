@@ -11,6 +11,18 @@ O jogo inclui:
 - Sincronização de jogadas em tempo real.
 - Registro de partidas no banco de dados.
 
+## Imagens
+<img width="887" height="597" alt="image" src="https://github.com/user-attachments/assets/c14bf051-3b53-4337-bf13-d69fd8858743" />
+<img width="897" height="606" alt="image" src="https://github.com/user-attachments/assets/aea6e082-ff88-4351-97da-a0d9d9c19032" />
+
+https://github.com/user-attachments/assets/234252ff-4b46-4038-b631-ac1a8bb003e0
+
+
+
+
+
+
+
 ## Tecnologias Utilizadas
 - **Linguagem:** Python 3.x
 - **Interface Gráfica:** Tkinter com CustomTkinter

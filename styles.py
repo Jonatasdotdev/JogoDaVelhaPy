@@ -1,22 +1,21 @@
 # Modern color palette with dark theme
-PRIMARY_COLOR = "#1a1a2e"  # Deep dark blue
-SECONDARY_COLOR = "#16213e"  # Slightly lighter dark
-ACCENT_COLOR = "#0f3460"  # Blue accent
-HIGHLIGHT_COLOR = "#e94560"  # Pink/red highlight
-SUCCESS_COLOR = "#00d9ff"  # Cyan
-BG_COLOR = "#0f0f1e"  # Very dark background
+PRIMARY_COLOR = "#1a1a2e"  
+SECONDARY_COLOR = "#16213e"  
+ACCENT_COLOR = "#0f3460"  
+HIGHLIGHT_COLOR = "#e94560"  
+BG_COLOR = "#0f0f1e"  
 TEXT_COLOR = "#ffffff"
 FONT_FAMILY = "Segoe UI"
 FONT_SIZE_LARGE = 28
 FONT_SIZE_MEDIUM = 18
 FONT_SIZE_SMALL = 14
 
-# For Pygame - Modern dark theme
+# For Pygame 
 BOARD_COLOR = "#1a1a2e"
 LINE_COLOR = "#00d9ff"
-X_COLOR = "#e94560"  # Pink/red for X
-O_COLOR = "#00d9ff"  # Cyan for O
-WIN_LINE_COLOR = "#FFD700"  # Gold for winning lin
+X_COLOR = "#e94560"  
+O_COLOR = "#00d9ff"  
+WIN_LINE_COLOR = "#FFD700"  
 LINE_WIDTH = 8
 GRID_LINE_WIDTH = 4
 
