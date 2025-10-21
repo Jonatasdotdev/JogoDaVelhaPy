@@ -7,7 +7,7 @@ from game_pygame import PygameGame
 from tkinter import messagebox
 
 class Client:
-    def __init__(self, host='localhost', port=55555):
+    def __init__(self, host='26.78.90.245', port=55555):
         self.client = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
         self.client.connect((host, port))
         self.username = None
@@ -45,12 +45,18 @@ class Client:
             print(f"[CLIENT] Enviando: {message}")
         except Exception as e:
             print(f"[CLIENT] Erro ao enviar: {e}")
+            try:
+                self.root.after(0, lambda: messagebox.showerror("Erro", f"Erro ao enviar mensagem: {e}"))
+            except:
+                pass
 
     def receive_messages(self):
         while True:
             try:
-                data = self.client.recv(1024).decode('utf-8')
+                data = self.client.recv(4096).decode('utf-8')
                 if not data:
+                    print("[CLIENT] Conexão fechada pelo servidor")
+                    self.root.after(0, lambda: messagebox.showerror("Erro", "Conexão perdida com o servidor."))
                     break
                 message = json.loads(data)
                 print(f"[CLIENT] Recebido: {message}")
@@ -58,35 +64,87 @@ class Client:
                 if message['type'] == 'register_success':
                     self.gui.show_custom_modal("✅ Sucesso", "Conta registrada com sucesso!", "success")
                     self.root.after(1500, self.gui.show_login_screen)
-                elif message['type'] == 'login_success':
-                    self.username = self.gui.login_username_entry.get()
+
+                def show_login_success():
+                    # Se desejar, pode usar username do message, senão pega do entry
+                    if 'username' in message:
+                        self.username = message['username']
+                    else:
+                        try:
+                            self.username = self.gui.login_username_entry.get()
+                        except:
+                            self.username = None
                     self.gui.show_main_screen()
-                elif message['type'] == 'error':
-                    self.gui.show_custom_modal("❌ Erro", message['msg'], "error")
-                elif message['type'] == 'online_users':
-                    self.gui.update_online_list(message['users'])
-                elif message['type'] == 'invite':
-                    self.gui.show_invite_modal(message['from'])
-                elif message['type'] == 'invite_sent':
+
+                def show_error():
+                    self.gui.show_custom_modal("❌ Erro", message.get('msg', 'Erro'), "error")
+
+                def update_online():
+                    self.gui.update_online_list(message.get('users', []))
+
+                def show_invite():
+                    self.gui.show_invite_modal(message.get('from'))
+
+                def invite_sent():
                     self.gui.show_custom_modal("📨 Convite", "Convite enviado! Aguardando resposta...", "info")
-                elif message['type'] == 'invite_rejected':
-                    self.gui.show_custom_modal("😔 Convite Recusado", f"{message['from']} rejeitou seu convite.", "warning")
-                elif message['type'] == 'game_start':
-                    self.current_game_id = message['game_id']
-                    self.symbol = message['symbol']
-                    self.my_turn = message['turn']
-                    self.opponent = message['opponent']
+
+                def invite_rejected():
+                    self.gui.show_custom_modal("😔 Convite Recusado", f"{message.get('from')} rejeitou seu convite.", "warning")
+
+                def start_game():
+                    self.current_game_id = message.get('game_id')
+                    self.symbol = message.get('symbol')
+                    self.my_turn = message.get('turn', False)
+                    self.opponent = message.get('opponent')
                     self.gui.show_game_screen()
-                elif message['type'] == 'update_board':
-                    if self.pygame_game:
-                        self.pygame_game.update_board(message['board'], message['turn'])
-                    self.gui.turn_label.configure(text="🎮 Sua vez!" if message['turn'] else "⏳ Vez do oponente")
-                elif message['type'] == 'game_end':
-                    result_type = "success" if "ganhou" in message['result'].lower() or "venceu" in message['result'].lower() else "info"
-                    self.gui.show_custom_modal("🏁 Fim de Jogo", message['result'], result_type)
+
+                def update_board_and_turn():
+                    board = message.get('board')
+                    turn = message.get('turn', False)
+                    if self.pygame_game and board is not None:
+                        try:
+                            self.pygame_game.update_board(board, turn)
+                        except Exception as e:
+                            print(f"[CLIENT] Erro ao atualizar pygame_game: {e}")
+                    try:
+                        self.gui.turn_label.configure(text="🎮 Sua vez!" if turn else "⏳ Vez do oponente")
+                    except Exception:
+                        pass
+
+                def game_end():
+                    result = message.get('result', '')
+                    result_type = "success" if "ganhou" in result.lower() or "venceu" in result.lower() else "info"
+                    self.gui.show_custom_modal("🏁 Fim de Jogo", result, result_type)
                     self.root.after(2500, self._end_game)
+
+                # Map message types to actions (all scheduled in main thread)
+                if mtype == 'register_success':
+                    self.root.after(0, show_register_success)
+                elif mtype == 'login_success':
+                    self.root.after(0, show_login_success)
+                elif mtype == 'error':
+                    self.root.after(0, show_error)
+                elif mtype == 'online_users':
+                    self.root.after(0, update_online)
+                elif mtype == 'invite':
+                    self.root.after(0, show_invite)
+                elif mtype == 'invite_sent':
+                    self.root.after(0, invite_sent)
+                elif mtype == 'invite_rejected':
+                    self.root.after(0, invite_rejected)
+                elif mtype == 'game_start':
+                    self.root.after(0, start_game)
+                elif mtype == 'update_board':
+                    self.root.after(0, update_board_and_turn)
+                elif mtype == 'game_end':
+                    self.root.after(0, game_end)
+
             except Exception as e:
                 print(f"Erro na recepção: {e}")
+                try:
+                    self.root.after(0, lambda: messagebox.showerror("Erro", f"Erro na recepção: {e}"))
+                except:
+                    pass
                 break
 
     def _end_game(self):

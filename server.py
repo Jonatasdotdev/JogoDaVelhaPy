@@ -21,7 +21,7 @@ def hash_password(password):
     return hashlib.sha256(password.encode()).hexdigest()
 
 class Server:
-    def __init__(self, host='localhost', port=55555):
+    def __init__(self, host='26.78.90.245', port=55555):
         self.server = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
         self.server.bind((host, port))
         self.server.listen()
