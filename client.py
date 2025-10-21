@@ -19,8 +19,8 @@ class Client:
         # GUI
         self.root = ctk.CTk()
         self.root.title("Jogo Multiplayer - Jala Capstone")
-        self.root.geometry("900x600")  # Janela maior
-        self.root.minsize(800, 550)  # Tamanho mínimo
+        self.root.geometry("900x600")
+        self.root.minsize(800, 550)
         self.root.protocol("WM_DELETE_WINDOW", self.on_close)
         self.gui = GUI(self.root, self)
         self.gui.show_login_screen()
@@ -42,13 +42,7 @@ class Client:
     def send_message(self, message):
         try:
             self.client.send(json.dumps(message).encode('utf-8'))
-            print(f"[CLIENT] Enviando: {message}")  # Debug
-        except ConnectionAbortedError:
-            print("[CLIENT] Conexão abortada ao enviar")
-            try:
-                self.root.after(0, lambda: messagebox.showerror("Erro", "Conexão com o servidor foi perdida."))
-            except:
-                pass
+            print(f"[CLIENT] Enviando: {message}")
         except Exception as e:
             print(f"[CLIENT] Erro ao enviar: {e}")
             try:
@@ -65,12 +59,9 @@ class Client:
                     self.root.after(0, lambda: messagebox.showerror("Erro", "Conexão perdida com o servidor."))
                     break
                 message = json.loads(data)
-                print(f"[CLIENT] Recebido: {message}")  # Debug
-
-                mtype = message.get('type')
-
-                # Helper wrappers para executar no thread principal do Tkinter
-                def show_register_success():
+                print(f"[CLIENT] Recebido: {message}")
+                
+                if message['type'] == 'register_success':
                     self.gui.show_custom_modal("✅ Sucesso", "Conta registrada com sucesso!", "success")
                     self.root.after(1500, self.gui.show_login_screen)
 
@@ -183,12 +174,10 @@ class Client:
     def invite_selected(self):
         selected = self.gui.online_list.curselection()
         if selected:
-            # Pega o texto da lista que tem formato "  👤 username"
             display_text = self.gui.online_list.get(selected[0])
-            # Remove o emoji e espaços para pegar só o username
             target = display_text.replace("👤", "").strip()
             
-            print(f"[CLIENT] Convidando usuário: '{target}'")  # Debug
+            print(f"[CLIENT] Convidando usuário: '{target}'")
             self.send_message({'type': 'invite', 'target': target})
         else:
             self.gui.show_custom_modal("⚠️ Atenção", "Selecione um usuário na lista!", "warning")
